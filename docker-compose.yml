@@ -1,0 +1,36 @@
+version: '2'
+
+services:
+  php:
+    build: ./docker/php/
+    container_name: php
+    volumes:
+      - ./docker/php/php.ini:/usr/local/etc/php/php.ini
+    volumes_from:
+      - apache
+    env_file: ./.env
+  apache:
+    build: ./docker/apache/
+    container_name: apache
+    networks:
+        default:
+          aliases:
+              - ${DOMAIN_LOCAL}
+    ports:
+        - 80:80
+    volumes:
+      - ./docker/apache/httpd.conf:/usr/local/apache2/conf/httpd.conf
+      - ./public:${DIR_WEB_ROOT}:z
+      - .:${DIR_PROJECT_ROOT}:z
+    env_file: ./.env
+  mysql:
+    build: ./docker/mysql/
+    container_name: mysql
+    ports:
+      - 3306:3306
+    environment:
+        MYSQL_ROOT_PASSWORD: root
+        MYSQL_DATABASE: mvc
+
+networks:
+  default:
