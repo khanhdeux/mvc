@@ -1,5 +1,9 @@
 version: '2'
 
+volumes:
+    mysql_data:
+        driver: local
+
 services:
   php:
     build: ./docker/php/
@@ -28,9 +32,20 @@ services:
     container_name: mysql
     ports:
       - 3306:3306
+    volumes:
+      - mysql_data:/var/lib/mysql
     environment:
         MYSQL_ROOT_PASSWORD: root
         MYSQL_DATABASE: mvc
+  phpmyadmin:
+      image: phpmyadmin/phpmyadmin
+      container_name: phpmyamdin
+      environment:
+          - PMA_ARBITRARY=1
+      ports:
+          - "8001:80"
+      volumes:
+          - /sessions
 
 networks:
   default:
